@@ -1,0 +1,29 @@
+name: C++ CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install g++ and cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ cppcheck
+
+      - name: Compile C++ source
+        run: g++ -std=c++17 -Wall -Wextra -Werror src/calc.cpp -o calc
+
+      - name: Run automated tests
+        run: ./tests/run_tests.sh
+
+      - name: Run Cppcheck static analysis
+        run: cppcheck --enable=warning,style,performance,portability --error-exitcode=1 src/
